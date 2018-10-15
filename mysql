@@ -1,0 +1,85 @@
+Change the password
+
+mysql> show variables like "%password%";
++---------------------------------------+-------+
+| Variable_name                         | Value |
++---------------------------------------+-------+
+| default_password_lifetime             | 0     |
+| disconnect_on_expired_password        | ON    |
+| log_builtin_as_identified_by_password | OFF   |
+| mysql_native_password_proxy_users     | OFF   |
+| old_passwords                         | 0     |
+| report_password                       |       |
+| sha256_password_proxy_users           | OFF   |
+| validate_password_check_user_name     | OFF   |
+| validate_password_dictionary_file     |       |
+| validate_password_length              | 4     |
+| validate_password_mixed_case_count    | 1     |
+| validate_password_number_count        | 1     |
+| validate_password_policy              | LOW   |
+| validate_password_special_char_count  | 1     |
++---------------------------------------+-------+
+
+mysql> set global validate_password_length=6;   //Change password length；At least 4.
+mysql> set global validate_password_policy=0;  //Change password policy to empty
+
+vim /etc/my.cnf     //Permanent configuration
+[mysqld]
+validate_password_length=6
+validate_password_policy=0 
+
+###################################################################################
+
+database
+
+-show databases;   //Display all libraries
+-use The library;  // Switch livrary
+-select database();   //Displays the current library
+-create database The library;   //create a new library
+-show tables;   //Display all tables
+-drop database The library;   //Delete library
+
+//////////////////////////////////////////////////////////////
+
+table
+
+mysql> create table dadb.stuinfo(
+    -> name char(20),
+    -> age int,
+    -> homeadd char(50)
+    -> );
+    
+-show tables;
+
+-desc database.table;
++---------+----------+------+-----+---------+-------+
+| Field   | Type     | Null | Key | Default | Extra |
++---------+----------+------+-----+---------+-------+
+| name    | char(20) | YES  |     | NULL    |       |
+| age     | int(11)  | YES  |     | NULL    |       |
+| homeadd | char(50) | YES  |     | NULL    |       |
++---------+----------+------+-----+---------+-------+
+
+-insert into stuinfo values("tom",20,"guangzhou"),("harry",18,"beijing");
+-drop table database.table;
+-select * from database.table;
+-delete * from database.table where name="bob";
+-alter table 表名 drop column 列名;  //删除整列
+-update database.table set age=100;   //Modify the whole column
+-update database.table set age=100 where name="tom";  //Modify those that are eligible
+
+
+mysql> insert into stuinfo values("tom",20,"guangzhou"),
+    -> ("harry",18,"beijing");
+
+mysql> show create table t2;
++-------+-------------------------------------------------------------------------------------------+
+| Table | Create Table                                                                              |
++-------+-------------------------------------------------------------------------------------------+
+| t2    | CREATE TABLE `t2` (
+  `name` char(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 |
++-------+-------------------------------------------------------------------------------------------+
+mysql> create table 学生表(姓名 char(20),性别 char(6)) DEFAULT CHARSET=utf8;  //创建中文表
+mysql> create table t3( age tinyint unsigned, pay float(7,2) );  //定义数值类型
+
