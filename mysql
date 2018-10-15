@@ -84,6 +84,7 @@ mysql> create table 学生表(姓名 char(20),性别 char(6)) DEFAULT CHARSET=ut
 mysql> create table t3( age tinyint unsigned, pay float(7,2) );  //定义数值类型
 
 
+Numeric types
 +-----------+--------+----------------+------------+------------+
 | tinyint   | 1 byte | -128 ~ 127     | 0 ~ 255    | 微小整数    |                                                                  
 +-----------+--------+----------------+------------+------------+
@@ -103,3 +104,16 @@ mysql> create table t3( age tinyint unsigned, pay float(7,2) );  //定义数值�
 +-----------+---------------------------------------------------+
 | unsigned  | 使用无符号存储范围                                   |
 +-----------+---------------------------------------------------+
+
+mysql>  create table db1(
+    -> name char(4),
+    -> gender enum("boy","girl","no"),   //enum:Choose a single value
+    -> interest set("book","film","music","football")   //set:Choose more than one value
+    -> );
+    
+    
+    
+    
+    
+
+
