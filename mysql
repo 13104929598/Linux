@@ -48,6 +48,8 @@ mysql> create table dadb.stuinfo(
     -> age int,
     -> homeadd char(50)
     -> );
+  
+-DEFAULT CHARSET=utf8  //Chinese Character set
     
 -show tables;
 
@@ -194,4 +196,4 @@ mysql> creat table gz(
     -> on update cascade on delete cascade
     -> )engine=innodb;
 
-
+mysql> alter table gz drop foreign key gz_ibfk_1;  //delete foreign key
