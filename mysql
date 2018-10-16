@@ -112,8 +112,86 @@ mysql>  create table db1(
     -> );
     
     
+ ##################################################################################
+ 
+ alter table tablename add values;
+ alter table tablename modify valuestype;
+ alter table tablename change valuesname;
+ alter table tablename drop values;
+ alter table tablename rename new tablename;
+ 
+ ///////////////////////////////////////////////////////////////////////////
+ 
+mysql> create table t21(
+    -> name char(10),
+    -> sex enum("boy","girl"),
+    -> class char(7),
+    -> age int(2),
+    -> index(name),
+    -> index(sex)
+    -> );
+    mysql> show index from t21\G;
+*************************** 1. row ***************************
+        Table: t21
+   Non_unique: 1
+     Key_name: name
+ Seq_in_index: 1
+  Column_name: name
+    Collation: A
+  Cardinality: 0
+     Sub_part: NULL
+       Packed: NULL
+         Null: YES
+   Index_type: BTREE
+      Comment: 
+Index_comment: 
+*************************** 2. row ***************************
+        Table: t21
+   Non_unique: 1
+     Key_name: sex
+ Seq_in_index: 1
+  Column_name: sex
+    Collation: A
+  Cardinality: 0
+     Sub_part: NULL
+       Packed: NULL
+         Null: YES
+   Index_type: BTREE
+      Comment: 
+Index_comment: 
+
+mysql> drop index name on t21;
+mysql> create index name on t21(name);
+
+mysql> create table t22(
+    -> name char(10),
+    -> stu_num char(10),
+    -> primary key(stu_num)
+    -> );
+
+mysql> create table t24(
+    -> cip char(15),
+    -> sport smallint(2),
+    -> status enum("deny","allow"),
+    -> primary key(cip,sport)
+    -> );
     
-    
-    
+mysql> create table t25(
+    -> stu_id int(2) primary key auto_increment,
+    -> name char(5),
+    -> age int(2) unsigned
+    -> );
+ 
+mysql> create table yg(
+    -> yg_id int(2) primary key auto_increment,
+    -> name char(10)
+    -> )engine=innodb;
+
+mysql> creat table gz(
+    -> gz_id int(2),
+    -> pay float(7,2),
+    -> foreign key(gz_id) references yg(yg_id)
+    -> on update cascade on delete cascade
+    -> )engine=innodb;
 
 
