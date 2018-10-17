@@ -197,3 +197,100 @@ mysql> creat table gz(
     -> )engine=innodb;
 
 mysql> alter table gz drop foreign key gz_ibfk_1;  //delete foreign key
+
+######################################################################################
+
+mysql八大组件：
+
+连接池、sql接口、分析器、优化器、查询缓存
+、存储引擎、文件系统、管理工具 
+
+
+mysql事务特性（ACID）
+-Atomic：原子性
+事物的整个操作是一个整体，不可分割，要么全部成功，要么全部失败。
+
+-Consistency：一致性
+事物操作的前后，表中的记录没有变化。
+
+-Isolation：隔离性
+事物操作是相互隔离不受影响的。
+
+-Durability：持久性
+数据一旦提交，不可改变，永久改变表数据。
+
+
+/////////////////////////////////////////////////////////////////////////
+
+
+导入导出
+
+mysql> show variables like "secure_file%";
++------------------+-----------------------+
+| Variable_name    | Value                 |
++------------------+-----------------------+
+| secure_file_priv | /var/lib/mysql-files/ |
++------------------+-----------------------+
+
+cp /etc/passwd /var/lib/mysql-files/passwd
+
+mysql> load data infile "/var/lib/mysql-files/passwd"
+    -> into table user
+    -> fields terminated by ":"
+    -> lines terminated by "\n";
+
+echo secure_file_priv=/mydir >> /etc/my.cnf
+chown mysql /mydir
+
+mysql> select * from user where shell="/bin/bash" 
+    -> into outfile "/mydir/b.txt"
+    -> fields terminated by ""
+    -> lines terminated by "\n";
+
+///////////////////////////////////////////////////////////////////////////
+
+mysql> select name,uid from user where uid between 50 and 100;
+mysql> select name,uid from user where  name regexp "[0-9]";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
