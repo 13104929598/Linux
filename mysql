@@ -198,6 +198,8 @@ mysql> creat table gz(
 
 mysql> alter table gz drop foreign key gz_ibfk_1;  //delete foreign key
 
+mysql> alter table score add foreign key(cno) references course(cno);  //add foreign key
+
 ######################################################################################
 
 mysql八大组件：
