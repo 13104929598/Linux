@@ -310,9 +310,59 @@ mysql> select * from teacher where tsex="男";
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+backup
 
 
+完全备份 mysqldump
+完全恢复 mysql
+差异备份  备份完全备份后所有新产生的
 
+增量备份 binlog 日志文件
+增量恢复 innobackupex
+
+
+物理备份（拷贝数据库文件夹） cp tar chown mysql
+
+逻辑备份 (根据数据成sql命令） 
+完全+差异                       完全+增量
+1.完全 t1 10 1.bak 10      1.完全 t1 10 1.bak 10
+2.差异 t1 2  2.bak 2       2.增量 t1 2  2.bak 2 
+3.差异 t1 4  3.bak 6       3.增量 t1 4  3.bak 4
+4.差异 t1 3  4.bak 9       4.增量 t1 3  4.bak 3
+
+逻辑备份 -mysqldump -uroot -p123456 db> /root/db3.sql
+逻辑恢复 -msql -uroot -p123456 db3 < /root/db4.sql  -mysql> source /目录/xxx.sql
+-A 所有库 -B 多个库
+
+binlog :  statement(记录命令）  row（保存数据修改）  mixed（混合双打）
+
+/etc/my.cnf
+log_bin
+server_id=1~255
+binlog_format=mixed
+
+binlog 
+mysqlbinlog --start-datetime="yyyy-mm-dd hh:mm:ss"  --stop-datetime="yyyy-mm-dd hh:mm:ss" /var/lib/mysql/db1-bin.000001 | mysql -uroot -p123456
+mysqlbinlog --start-position=xx  --stop-position=xx /var/lib/mysql/db1-bin.000001 | mysql -uroot -p123456
+
+mysql> show master status;  //显示日志文件及偏移量  -flush logs  
++--------------+----------+--------------+------------------+-------------------+
+| File         | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |
++--------------+----------+--------------+------------------+-------------------+
+| leung.000001 |    2047  |              |                  |                   |
++--------------+----------+--------------+------------------+-------------------+
+
+mysql> purge master logs to "leung.000002"  \\删除02之前所有
+mysql> reset master \\删除全部到01
+
+逻辑全备份
+innobackupex --host localhost --user root --password 123456 /allbak1 --no-timestamp
+innobackupex --apply-log /allbak2/
+innobackupex --copy-back /allbak2
+
+逻辑增量备份
+innobackupex  --user root --password 123456 /fullbak --no-timestamp
+innobackupex --user root --password 123456 --incremental /new --incremental-basedir=/fullbak --no-timestamp
 
 
 
