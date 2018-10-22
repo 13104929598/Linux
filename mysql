@@ -364,7 +364,35 @@ innobackupex --copy-back /allbak2
 innobackupex  --user root --password 123456 /fullbak --no-timestamp
 innobackupex --user root --password 123456 --incremental /new --incremental-basedir=/fullbak --no-timestamp
 
+#########################################################################
 
+DB主从
+
+主
+vim /etc/my.cnf
+log_bin=
+server_id=
+binlog_format="mixed"    log_slave_updates
+
+mysql> grant replication slave on *.* to user@"" identified by "";
+mysql> show master status;
+
+从
+vim /etc/my.cnf
+server_id=     
+
+mysql> change master to 
+->master_host='',
+->master_user='',
+->master_password='',
+->master_log_file='',
+->master_log_pos= ;
+
+mysql> start slave;
+mysql> show slave status\G;
+
+master.info   \\主库信息
+relay-log.info  \\中继日志信息
 
 
 
