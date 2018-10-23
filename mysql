@@ -394,6 +394,99 @@ mysql> show slave status\G;
 master.info   \\主库信息
 relay-log.info  \\中继日志信息
 
+半同步复制
+
+mysql> show variables like "have_d%";
+mysql> install plugin rpl_semi_sync_master soname 'semisync_master.so';
+mysql> install plugin rpl_semi_sync_slave soname 'semisync_slave.so';
+mysql> select plugin_name,plugin_status from information_schema.plugins where plugin_name like "%rpl%";
+mysql> set global rpl_semi_sync_master_enabled=1;
+mysql> set global rpl_semi_sync_slave_enabled=1;
+mysql> show variables like 'rpl%'_enabled;
+
+plugin-load=rpl_semi_sync_master=semisync_master.so
+rpl_semi_sync_master_enabled=1
+plugin-load=rpl_semi_sync_slave=semisync_slave.so
+rpl_semo_sync_slave_enabled=1
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+读写分离
+
+[maxscale]
+threads=auto
+
+[server1]
+type=server
+address=192.168.4.52
+port=3306
+protocol=MySQLBackend
+
+[server2]
+type=server
+address=192.168.4.51
+port=3306
+protocol=MySQLBackend
+
+[MySQL Monitor]
+type=monitor
+module=mysqlmon
+servers=server1,server2
+user=user
+passwd=123456
+monitor_interval=10000
+
+[Read-Write Service]
+type=service
+router=readwritesplit
+servers=server1,server2
+user=mysql
+passwd=123456
+max_slave_connections=100%
+
+[Read-Write Listener]
+type=listener
+service=Read-Write Service
+protocol=MySQLClient
+port=4006
+
+[MaxAdmin Listener]
+type=listener
+service=MaxAdmin Service
+protocol=maxscaled
+socket=default
+port=4016
+
+mysql> grant replication slave,replication client on *.* to user@"%" identified by "";
+mysql> grant select on mysql.* to mysql@"%" identified by "";
+
+maxscale -f /etc/maxscale.cnf
+
+maxadmin -uadmin -pmariadb -P4016
+########################################################
+
+mysql多实例
+
+vim /etc/mysql.cnf
+
+[mysqld_multi]
+mysqld=/usr/local/mysql/bin/mysqld_safe
+mysqladmin=/usr/local/mysql/bin/mysqladmin
+user=root
+
+[mysqld1]
+port=3307
+datadir=/data3307  
+socket=/data3307/mysql.sock
+pid-file=/data3307/mysqld.pid
+log-error=/data3307/mysqld.err
+
+[mysqld2]
+port=3308
+datadir=/data3308
+socket=/data3308/mysql.sock
+pid-file=/data3308/mysqld.pid
+log-error=/data3308/mysqld.err
 
 
 
