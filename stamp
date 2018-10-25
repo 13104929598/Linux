@@ -1,0 +1,7 @@
+[root@serverX ~]# vim /etc/postfix/main.cf
+relayhost = [smtpX.example.com]
+inet_interfaces = loopback-only
+myorigin = desktopX.example.com
+mynetworks = 127.0.0.0/8 [::1]/128
+mydestination =
+local_transport = error:local delivery disabled
