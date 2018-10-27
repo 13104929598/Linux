@@ -488,7 +488,30 @@ socket=/data3308/mysql.sock
 pid-file=/data3308/mysqld.pid
 log-error=/data3308/mysqld.err
 
+############################################################################
 
+delimiter //
+create procedure num(in num int)
+begin
+	declare x int;
+	declare y int;
+	declare count int;
+	set x = 1;
+	set count = 0;
+	while x <= num do
+		select uid into y from db4.user where id=x;
+		if y % 2 = 0 then
+			set count = count + 1;
+			select name from db4.user where id=x;
+		end if;
+		set x = x + 1;
+	end while;
+	select count;
+end
+//
+delimiter ;
+
+#######################################################################
 
 
 
