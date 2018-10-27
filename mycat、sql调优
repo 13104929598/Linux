@@ -1,0 +1,55 @@
+-server.xml  //设置连mycat帐号
+-schema.xml  //配置真实库表
+-rule.xml  //定义分片规则
+
+##################################################################
+
+并发连接控制
+
+mysql> show global status like "%conne%";
+max_connections
+Max_used_connections
+
+mysql> show variables like "%timeout%";
+connect_timeout  
+wait_timeout
+
+缓存参数控制
+mysql> show variables like "%buff%";
+key_buffer-size
+sort_buffer_size
+read_buffer_size
+
+mysql> show variables like "%cache%";
+three_cache_siza
+table_open_cacha
+
+查询缓存
+mysql> show variables like "%query_cache%";
++------------------------------+---------+
+| Variable_name                | Value   |
++------------------------------+---------+
+| have_query_cache             | YES     |
+| query_cache_limit            | 1048576 |
+| query_cache_min_res_unit     | 4096    |
+| query_cache_size             | 1048576 |
+| query_cache_type             | OFF     |
+| query_cache_wlock_invalidate | OFF     |
++------------------------------+---------+
+
+缓存统计
+mysql> show global status like "qcache%";
++-------------------------+---------+
+| Variable_name           | Value   |
++-------------------------+---------+
+| Qcache_free_blocks      | 1       |
+| Qcache_free_memory      | 1031832 |
+| Qcache_hits             | 0       |
+| Qcache_inserts          | 0       |
+| Qcache_lowmem_prunes    | 0       |
+| Qcache_not_cached       | 4       |
+| Qcache_queries_in_cache | 0       |
+| Qcache_total_blocks     | 1       |
++-------------------------+---------+
+
+
