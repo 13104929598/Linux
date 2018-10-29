@@ -1,0 +1,13 @@
+数据库类型
+
+RDBMS 关系型 预先设置组织结构，存储于物理介质，可关联操作 ：
+Oracle、DB2 MS SQL、Server、MYSQL、Mariadb
+
+NOSQL（Not Only SQL） 非关系型 无需预定义数据存储结构 表记录可有不同结构：
+Redis、MongoDB、Memcached、CouchDB、Neo4j、FlockDB
+
+##################################################################
+
+redis
+
+save 存盘 shutdouwn 停服务存盘
