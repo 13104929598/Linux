@@ -11,3 +11,21 @@ Redis、MongoDB、Memcached、CouchDB、Neo4j、FlockDB
 redis
 
 save 存盘 shutdouwn 停服务存盘
+
+
+##############################################################
+
+redis 集群
+
+yum -y install gcc 
+cd redis-4.0.8
+make && make install
+./utils/install_server.sh
+
+vim /etc /redis/redis.conf
+bind IP
+daemonize yes
+port 63**
+cluster-enabled yes
+cluster-config-file nodes-****.conf
+cluster-node-timeout 5000
