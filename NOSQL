@@ -29,3 +29,24 @@ port 63**
 cluster-enabled yes
 cluster-config-file nodes-****.conf
 cluster-node-timeout 5000
+
+
+#################################################################
+
+redis //master,slave  //临时
+  > slaveof 192.168.4.51 6351  //master ip port
+  > SLAVEOF no one  //反主
+  
+redis //master,slave  //永久
+vim /etc/redis/6379.conf 
+slaveof master,IP,PORT
+masterauth 123456
+
+vim /etc/sentinel.conf  //sentinel
+  sentinel monitor redisa51 192.168.4.51 6351 1
+  sentinel auth-pass redisa51 123456
+redis-sentinel /etc/sentinel.conf
+  
+
+
+  
