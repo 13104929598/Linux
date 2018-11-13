@@ -1,0 +1,52 @@
+vSphere  ----> esxi、vcenter(windows)
+KVM -----> qemu、libvirt(virsh,virt-manager)
+
+yum install -y qemu-kvm libvirt-daemon libvirt-client libvirt-daemon-driver-qemu
+systemctl restart libvirtd
+
+虚拟机组成
+ -内核虚拟化模块（KVM）
+ -系统设备仿真（QEMU）
+ -虚拟机管理程序（LIBVIRT）
+ -XML文件（虚拟机配置声明文件） // /etc/libvirt/qemu
+ -磁盘镜像文件（虚拟机硬盘）  // /var/lib/libvirt/images
+ 
+ ######################################################################################
+ 
+ -virsh nodeinfo  //查看KVM节点信息
+ -virsh list --all  //列出虚拟机
+ -virsh net-list --all  //列出虚拟机网络
+ -virsh dominfo 虚拟机名称  //查看虚拟机信息
+ -virsh start|reboot|shutdown 虚拟机名称  
+ -virsh destroy KVMname  //强制关机
+ -virsh autostart KVMname  //开机自启
+  
+ virsh -c qemu+ssh://XX.XX.XX.XX/system  //远程   
+ virsh console KVMname
+ ##############################################################################
+ 
+ QCOW2（虚拟磁盘管理）   COW(Copy On Write)
+ 
+ -qemu-img 命令 参数 块文件名称 大小
+ -create  //创建
+ -convert //转换格式
+ -info  //查看信息
+ -snapshot  //管理快照
+ 
+ -qemu-img create -f qcow2 XX.img 100G  //创建
+ 
+ ##########################################################################
+ 
+DEVICE="eth0"
+ONBOOT="yes"
+NM_CONTROLLED="no"
+TYPE="Ethernet"
+BOOTPROTO="dhcp"
+#IPADDR="192.168.1.XX"
+#NETMASK="255.255.255.0"
+
+###############################################################
+
+
+
+ 
