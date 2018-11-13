@@ -42,6 +42,14 @@ systemctl restart libvirtd
   </ip>
 </network>
 
+-net-list  //查看虚拟网络
+-net-define XX.xml  //创建
+-net-undefine XX  //删除
+-net-start XX  //启动
+-net-destroy XX  //停止
+-net-edit XX  //修改
+-net-autostart XX  //开机自启
+
 
  ########################################################################
  
