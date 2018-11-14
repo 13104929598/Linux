@@ -1,0 +1,56 @@
+vim /etc/named.conf
+
+options {
+        listen-on port 53 { 192.168.1.254; };
+        //listen-on-v6 port 53 { ::1; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        allow-query     { any; };
+        
+         recursion yes;
+        forwarders { 114.114.114.114; };
+        dnssec-enable no;
+        dnssec-validation no;
+
+
+########################################################
+
+vim /etc/chrony.conf
+
+server ntp.aliyun.com iburst
+bindacqaddress 0.0.0.0
+allow 0/0
+
+chronyc sources -v
+################################################################
+
+openstack
+
+组件
+-Horizon     基于web图形
+-Keystone    提供认证授权
+-Neutron     软件定义网络
+-Cinder      管理存储备份
+-Nova        用于节点管理
+-Glance      镜像注册角色
+
+#####################################################################
+
+环境
+
+虚拟机1 openstack nova
+hostname openstack
+  内存 9.5G
+  硬盘 系统 50G
+  硬盘      20G  空盘
+  网卡 2块 vbr private1
+  
+虚拟机2 nova
+hostname nova01
+  内存 5.0G
+  硬盘 系统 50G
+  网卡 2块 vbr private1
+  
+######################################################################
