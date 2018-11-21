@@ -1,0 +1,54 @@
+yum install -y ansible
+ansible --version
+
+vim /etc/ansible/cfg
+  inventory      = /etc/ansible/hosts
+  roles_path    = /etc/ansible/roles:/usr/share/ansible/roles
+  host_key_checking = False  //不检测主机的sshkey，在第一次连接的时候不用输入yes 
+  
+vim /etc/ansible/hosts
+  
+  [web]
+  web[1:20] 
+  
+  [web:vars]    //web组:变量(vars不改)，web组的多台机器共用一个用户名和密码
+  ansible_ssh_user="root"
+  ansible_ssh_pass="123456"
+  
+  [mysql]
+  db[1:10]
+  
+  [other]
+  XX
+  
+ansible web --list-host   //显示web组的主机
+ansible all --list-host   //显示所有组的主机
+ansible cache -m ping  //检查ssh连通性，非ping  -k 密码
+
+  [app:children]    //指定子分组(app可改:children不改)
+  web
+  mysql
+  
+  [app:vars]
+  ansible_ssh_user="root"
+  ansible_ssh_pass="123456"
+  
+###################################################################################
+  
+  ansible nova -m 模块 -a ‘执行’
+   ansible web1 -m shell -a 'chdir=/tmp touch f1'
+   
+  command  默认
+  shell  万能
+  raw  运用范围广
+  script  脚本
+  copy //ansible all -m copy -a 'src=/etc/resolv.conf dest=/etc/resolv.conf'
+  lineinfile  //整行替换  ansible all -m lineinfile -a 'path=/etc/resolv.conf regexp=".*114.*" line="nameserver 8.8.8.8"'
+  replace  //部分替换  ansible all -m replace -a 'path=/etc/resolv.conf regexp="114.114.114.114" replace="8.8.8.8"'
+                      ansible all -m replace -a 'path=/etc/resolv.conf regexp="^(nameserver).*" replace="/1 8.8.8.8"'
+  yum  //删除 ansible cache -m yum -a 'name=lftp,XX state=removed'
+       //安装 ansible cache -m yum -a 'name=lftp,XX'
+  service //ssh服务启动&自启  ansible cache -m service -a 'name="sshd" enabled="yes" state="started"'
+          --enabled  --state(started,stopped,restarted,reloaded)
+  setup  //主机信息  ansible cache -m setup -a 'filter=ansible_distribution'      
+################################################################
