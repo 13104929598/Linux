@@ -45,7 +45,7 @@ ansible cache -m ping  //检查ssh连通性，非ping  -k 密码
   copy //ansible all -m copy -a 'src=/etc/resolv.conf dest=/etc/resolv.conf'
   lineinfile  //整行替换  ansible all -m lineinfile -a 'path=/etc/resolv.conf regexp=".*114.*" line="nameserver 8.8.8.8"'
   replace  //部分替换  ansible all -m replace -a 'path=/etc/resolv.conf regexp="114.114.114.114" replace="8.8.8.8"'
-                      ansible all -m replace -a 'path=/etc/resolv.conf regexp="^(nameserver).*" replace="/1 8.8.8.8"'
+                      ansible all -m replace -a 'path=/etc/resolv.conf regexp="^(nameserver).*" replace="\1 8.8.8.8"'
   yum  //删除 ansible cache -m yum -a 'name=lftp,XX state=removed'
        //安装 ansible cache -m yum -a 'name=lftp,XX'
   service //ssh服务启动&自启  ansible cache -m service -a 'name="sshd" enabled="yes" state="started"'
