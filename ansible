@@ -51,4 +51,115 @@ ansible cache -m ping  //检查ssh连通性，非ping  -k 密码
   service //ssh服务启动&自启  ansible cache -m service -a 'name="sshd" enabled="yes" state="started"'
           --enabled  --state(started,stopped,restarted,reloaded)
   setup  //主机信息  ansible cache -m setup -a 'filter=ansible_distribution'      
+
 ################################################################
+
+ansible-palybook   //ansible-doc
+[root@ansible ansible]# vim ping.yml
+  ---
+  - hosts: all
+    remote_user: root
+    tasks:
+       - ping:
+  [root@ansible ansible]# ansible-playbook ping.yml  //输出结果
+
+#################################################################################33
+
+playbook :  ansible-doc (EXAMPLES)
+---
+- hosts: cache
+  remote_user: root
+  tasks:
+    - yum:
+        name: httpd
+        state: installed
+    - lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^Listen'
+        line: 'Listen 8080'
+    - lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '#ServerName www.example.com:80'
+        line: 'ServerName www.cache.com:8080'
+    - shell: echo hello world > /var/www/html/index.html
+    - service:
+        name: httpd
+        state: restarted
+        enabled: yes
+    - shell: apachectl -t
+    
+#######################################################################
+
+// vars  定义变量
+---
+- hosts: cache
+  remote_user: root
+  vars:
+    user:
+      name: qq
+      group: root
+  tasks:
+    - name: add user
+      user:
+        name: "{{user.name}}"
+        group: "{{user.group}}"
+    - name: change password
+      shell: echo "123456" | passwd --stdin "{{user.name}}"
+      
+ansible-playbook user1.yml -e '{"user":{"name":"xx","group":"root"}}'
+ansible-playbook user1.yml -e '@user.vars'
+
+cat user.vars
+user:
+  name: haha
+  group: root
+ 
+igonre_errors: true  //忽略错误继续执行 
+password: {{'123456'|password_hash('sha512')}}  //对密码用password_hash(sha512)进行过滤加密
+
+####################################################################
+
+// when  条件判断  //register  注册变量，保存前一命令返回状态在后面调用
+---
+- hosts: all
+  remote_user: root
+  tasks:
+    - shell: id z3
+      register: 1
+    - shell: echo redhat > /root/1.txt
+      when: 1
+      
+---
+- host: web
+  remote_user: root
+  tasks:
+    - shell: uptime | awk '{printf ("%.2f",$(NF-2))}'
+      register: result
+    - service:
+        name: httpd
+        state: stopped
+      when: result.stdout | float > 0.7
+      
+###########################################################################
+
+//with_items  标准循环
+
+---
+- hosts: cache
+  remote_user: root
+  tasks:
+    - name: add user
+      user:
+        name: "{{items.name}}"
+        group: "{{items.group}}"
+        password: {{'123456'|password_hash('sha512')}}
+      with_items:
+        - {name:"nb",group:"root"}
+        - {name:"dd",group:"root"}
+        - {name:"pj",group:"admin"}
+        - {name:"lx",group:"admin"}
+        
+#################################################################
+
+ansible-playbook -C playbook.yml  //测试运行
+ --list-host  //显示受到影响的主机
