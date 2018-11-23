@@ -1,0 +1,100 @@
+-Elasticsearch
+-Logstash
+-Kibana                    LAMP  LKEL
+
+###############################################################################
+
+-Elasticsearch
+
+yum -y install java-1.8.0-openjdk.x86_64  elasticsearch
+vim /etc/elasticsearch/elasticsearch.yml
+  17 cluster.name: myelk        //配置集群名字
+  23 node.name: se1        //当前主机名称
+  54 network.host: 0.0.0.0     // 0.0.0.0（监听所有地址）
+  68 discovery.zen.ping.unicast.hosts: ["se1", "se2","se3"]   //声明集群里的主机成员有谁，不需要全部写进去
+ 
+ ss -antupl  //9200 9300
+http://192.168.1.51:9200/_cluster/health?pretty
+
+##############################################################################
+
+http请求方法  ES
+-PUT     增
+-DELETE  删
+-POST    改
+-GET     查
+
+###########################################################################
+
+curl 
+ -i 显示返回头信息
+ -A 修改请求Agent
+ -X 设置请求方法
+ -d POST上传
+ 
+###############################################################################
+
+ES插件
+
+ cd /usr/share/elasticsearch/bin 
+ ./plugin  install  ftp://192.168.1.254/elk/elasticsearch-head-master.zip 
+ ./plugin  install  ftp://192.168.1.254/elk/elasticsearch-kopf-master.zip  
+ ./plugin install  ftp://192.168.1.254/elk/bigdesk-master.zip
+ 
+http://192.168.1.51:9200/_plugin/head/
+http://192.168.1.51:9200/_plugin/kopf/
+http://192.168.1.51:9200/_plugin/bigdesk/
+http://192.168.1.51:9200/_cat --?v --?help
+
+########################################################################
+
+索引创建
+[root@el1 bin]# curl -XPOST http://192.168.1.52:9200/test -d '
+> {
+>   "settings":{
+>      "index" :{
+>         "number_of_shards": 5,
+>         "number_of_replicas": 1
+>      }
+>    }
+>  }'
+
+数据 增
+[root@el1 ~]# curl -XPUT http://192.168.1.51:9200/tedu/nsd1807/4 -d '
+> {
+>   "姓名": "欣",
+>   "性别": "男",
+>   "爱好": "女",
+>   "年龄": "38"
+> }'
+
+数据 改
+[root@el1 ~]# curl -XPOST http://192.168.1.51:9200/tedu/nsd1807/1/_update -d '
+> {
+>   "doc":{"年龄": 100}
+> }'
+
+数据 查
+[root@el1 ~]# curl http://192.168.1.51:9200/tedu/nsd1807/2?pretty
+
+数据 删
+[root@el1 ~]# curl -XDELETE http://192.168.1.51:9200/tedu/nsd1807/2
+[root@el1 ~]# curl -XDELETE http://192.168.1.51:9200/tedu/
+[root@el1 ~]# curl -XDELETE http://192.168.1.51:9200/*
+
+##################################################################################
+
+-Kibana
+ yum install -y kibana
+ 
+vim /opt/kibana/config/kibana.yml
+ 2 server.port: 5601   //若把端口改为80，可以成功启动kibana，但ss时没有端口，没有监听80端口，服务里面写死了，不能用80端口，只能是5601这个端口
+ 5 server.host: "0.0.0.0"     //服务器监听地址
+15 elasticsearch.url: http://192.168.1.61:9200   //声明地址，从哪里查，集群里面随便选一个
+23 kibana.index: ".kibana"    //kibana自己创建的索引
+26 kibana.defaultAppId: "discover"    //打开kibana页面时，默认打开的页面discover
+53 elasticsearch.pingTimeout: 1500    //ping检测超时时间
+57 elasticsearch.requestTimeout: 30000    //请求超时
+64 elasticsearch.startupTimeout: 5000    //启动超时
+
+
