@@ -241,5 +241,26 @@ local0.info         @192.168.1.67:514    //写一个@或两个@@都可以，一�
      
  ----------------------------------------------------------------------------------
  
+ apache+logstash 访问日志配置
  
-  
+yum install -y httpd filebeat
+
+[root@web httpd]# grep -Pv "^\s*(#|$)" /etc/filebeat/filebeat.yml
+filebeat:
+  prospectors:
+    -
+      paths:
+        - /var/log/httpd/access.log
+      input_type: log
+  registry_file: /var/lib/filebeat/registry
+output:
+  elasticsearch:
+    hosts: ["localhost:9200"]
+ logstash:
+    hosts: ["192.168.1.57:5044"]
+shipper:
+logging:
+  files:
+    rotateeverybytes: 10485760 # = 10MB
+
+#############################################################################################
