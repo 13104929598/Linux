@@ -48,6 +48,8 @@ Flume: 日志收集工具
    
 ###################################################################################
 
+HDFS
+
 --Hadoop分布式
 vim /usr/local/hadoop/etc/hadoop/core-site.xml  //核心配置文件
 <configuration>
@@ -101,4 +103,156 @@ for i in node{1..3}; do scp -r /usr/local/hadoop $i:/usr/local/hadoop; done
 23591 SecondaryNameNode
 [root@nn01 hadoop]# ./bin/hdfs dfsadmin -report    //查看集群是否组建成功
 Live datanodes (3):    //有三个角色成功
+
+###################################################################################
+
+Yarn
+
+cd /usr/local/hadoop/etc/hadoop/
+cp mapred-site.xml.template  mapred-site.xml
+
+vim mapred-site.xml
+<configuration>
+      <property>
+        	<name>mapreduce.framework.name</name>
+        	<value>yarn</value>
+    	</property>
+</configuration>
+
+vim yarn-site.xml
+<configuration>
+<!-- Site specific YARN configuration properties -->
+      <property>
+          <name>yarn.resourcemanager.hostname</name>
+          <value>hadoop-nn01</value>
+      </property>
+      <property>
+          <name>yarn.nodemanager.aux-services</name>
+          <value>mapreduce_shuffle</value>
+      </property>
+</configuration>
+
+for i in node{1..3};do scp /usr/local/hadoop/etc/hadoop/mapred-site.xml $i:/usr/local/hadoop/etc/hadoop/mapred-site.xml;done
+for i in node{1..3};do scp /usr/local/hadoop/etc/hadoop/yarn-site.xml $i:/usr/local/hadoop/etc/hadoop/yarn-site.xml;done
+
+
+[root@nn01 hadoop]# cd /usr/local/hadoop
+[root@nn01 hadoop]# ./sbin/start-dfs.sh
+[root@nn01 hadoop]# ./sbin/start-yarn.sh
+[root@nn01 hadoop]# jps   //nn01查看有ResourceManager
+23408 NameNode
+1043 ResourceManager
+1302 Jps
+23591 SecondaryNameNode
+[root@nn01 hadoop]# ssh node1 jps  //node1查看有NodeManager
+25777 Jps
+22409 DataNode
+25673 NodeManager
+
+http://192.168.1.21:50070/    //--namenode web页面（nn01）
+http://192.168.1.21:50090/    //--secondory namenode web页面（nn01）
+http://192.168.1.22:50075/    //--datanode web页面（node1,node2,node3）
+http://192.168.1.21:8088/     //--resourcemanager web页面（nn01）
+http://192.168.1.22:8042/     //--nodemanager web页面（node1,node2,node3）
+
+-----------------------------------------------------------------------------------
+
+[root@nn01 hadoop]# ./bin/hadoop fs -ls /     //查看集群文件系统的根，没有内容
+[root@nn01 hadoop]# ./bin/hadoop fs -mkdir  /aaa        
+//在集群文件系统下创建aaa目录
+[root@nn01 hadoop]# ./bin/hadoop fs -ls /     //再次查看，有刚创建的aaa目录
+Found 1 items
+drwxr-xr-x   - root supergroup          0 2018-09-10 09:56 /aaa
+[root@nn01 hadoop]#  ./bin/hadoop fs -touchz  /fa    //在集群文件系统下创建fa文件
+[root@nn01 hadoop]# ./bin/hadoop fs -put *.txt /aaa     
+//上传*.txt到集群文件系统下的aaa目录
+[root@nn01 hadoop]#  ./bin/hadoop fs -ls /aaa   //查看
+Found 3 items
+-rw-r--r--   2 root supergroup      86424 2018-09-10 09:58 /aaa/LICENSE.txt
+-rw-r--r--   2 root supergroup      14978 2018-09-10 09:58 /aaa/NOTICE.txt
+-rw-r--r--   2 root supergroup       1366 2018-09-10 09:58 /aaa/README.txt
+[root@nn01 hadoop]# ./bin/hadoop fs -get  /aaa  //下载集群文件系统的aaa目录
+[root@nn01 hadoop]# ./bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.6.jar  wordcount /aaa /bbb  
+  //hadoop集群分析大数据，hadoop集群/aaa里的数据存到hadoop集群/bbb下
+[root@nn01 hadoop]# ./bin/hadoop fs -cat /bbb/*   //查看集群里的数据
+
+###############################################################################################
+
+--增加节点(修复)
+
+[root@node4 ~]# cd /usr/local/hadoop/
+[root@node4 hadoop]# ./sbin/hadoop-daemon.sh start datanode
+starting datanode, logging to /usr/local/hadoop/logs/hadoop-root-datanode-node4.out
+[root@node4 hadoop]# jps
+690 Elasticsearch
+1304 Jps
+1230 DataNode
+[root@hadoop-nn01 hadoop]# ./bin/hdfs dfsadmin -setBalancerBandwidth 50000000
+[root@hadoop-nn01 hadoop]# ./sbin/start-balancer.sh 
+starting balancer, logging to /usr/local/hadoop/logs/hadoop-root-balancer-hadoop-nn01.out
+Time Stamp               Iteration#  Bytes Already Moved  Bytes Left To Move  Bytes Being Moved
+[root@hadoop-nn01 hadoop]# ./bin/hdfs dfsadmin -report
+
+##############################################################################
+
+--删除节点
+[root@hadoop-nn01 ~]# cd /usr/local/hadoop/
+[root@hadoop-nn01 ~]# vim etc/hadoop/hdfs-site.xml
+        <property>
+                <name>dfs.hosts.exclude</name>
+                <value>/usr/local/hadoop/etc/hadoop/exclude</value>
+        </property>
+[root@hadoop-nn01 ~]# vim /usr/local/hadoop/etc/hadoop/exclude
+node4
+[root@hadoop-nn01 ~]# ./bin/hdfs dfsadmin -refreshNodes
+[root@hadoop-nn01 ~]# ./bin/hdfs dfsadmin -report
+--Decommission Status : Normal  //正常状态
+--Decommission Status : Decommission in progress  //数据正在迁移
+--ecommission Status : Decommission  //数据迁移完成（可down）
+[root@hadoop-nn01 ~]# ./sbin/hadoop-daemon.sh stop datanod
+ 
+#########################################################################
+
+NFS网关
+
+[root@hadoop-nn01 ~]# groupadd -g 200 nfsuser
+[root@hadoop-nn01 ~]# useradd -u 200 -g 200 nfsuser
+[root@nfsgw ~]# groupadd -g 200 nfsuser
+[root@nfsgw ~]# useradd -u 200 -g 200 nfsuser
+
+[root@hadoop-nn01 ~]# /usr/local/hadoop/sbin/stop-all.sh 
+[root@hadoop-nn01 hadoop]# rm -rf logs/*
+[root@hadoop-nn01 hadoop]# vim etc/hadoop/core-site.xml
+        <property>
+                <name>hadoop.proxyuser.nfsuser.groups</name>
+                <value>*</value>
+        </property>
+        <property>
+                <name>hadoop.proxyuser.nfsuser.hosts</name>
+                <value>*</value>
+        </property>
+
+  for i in 192.168.1.{51..55};do scp /usr/local/hadoop/etc/hadoop/core-site.xml  \
+  $i:/usr/local/hadoop/etc/hadoop/core.site.xml;done
+[root@hadoop-nn01 hadoop]# ./sbin/start-dfs.sh 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
