@@ -65,9 +65,45 @@ touch作用：创建文件或更新文件的时间
   %表示0到多个任意字符
   ——表示一个任意字符
   
+网卡命名：
+en：以太网  wl：无线局域网  ww：无线广域网
+第三个字母可以反映出网卡的类别
+  o表示在主板上集成的网卡
+  p表示位置，s表示插槽slot
 
+配置IP地址
+  AS4：netconf  //Advanced Server  高级服务器
+  RHEL5/6：setup
+  RHEL7:nmtui
+配置文件 /etc/sysconfing/network-scripts/ifcfg-eth0
 
+主机名  RHEL7之前在/etc/sysconfig/network
 
+grep显示前两行后三行 grep -B2 -A3 -n 'adm' /etc/passwd
+
+标准文件
+  标准输入：键盘，文件描述符0
+  标准输出：终端，文件描述符1
+  标准错误：终端，文件描述符2
+  
+输入重定向 
+  tr ‘a-z’ ‘A-Z’  //CTRL+D结束
+  tr ‘a-z’ ‘A-Z’ > ./.bashrc
+
+结束标志 here document
+  vim repo.sh
+    #!/bin/bash
+    cat <<EOF > /etc/yum.repos.d/rhel7.repo
+    [rhel7]
+    name=rhel7
+    baseurl=ftp://192.168.4.254/rhel7
+    enabled=1
+    gpgcheck=0
+    EOF
+    echo -e "carate\t\t\t\t\033[32;1m[NICE]\033[0m"
+
+查找三天内动过的文件
+  find / -mtime -3
 
 
 
