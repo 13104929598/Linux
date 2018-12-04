@@ -155,8 +155,58 @@ done
 10 21 * * 1 cmd  每周一21:10执行
 */5 8-18 * * 1,3,5  每周一三五从早上8点到晚18点每隔5分钟
 
+---------------------------------------------------------------------
 
+[root@room9pc01 ~]# ll /etc/hosts
+-rw-r--r--. 1 root root 477 3月  10 2018 /etc/hosts
+第一个字符是文件类型： - 普通文件
+                   d 目录
+                   l 链接
+                   b 块设备
+                   c 字符设备
+                   
+特殊权限：
+  系统中，程序、命令总是以某一用户的身份运行
+  SUID：以属主的身份执行命令
+    (1)[haha@room9pc01 ~]$ ls /root
+       [root@room9pc01 ~]# chmod  u+s /bin/ls
+    (2)[haha@room9pc01 ~]$ touch 1.txt
+       [root@room9pc01 ~]# chmod  u+s /bin/touch 
+       [haha@room9pc01 ~]$ touch 2.txt
+       [haha@room9pc01 ~]$ ll 1.txt 2.txt 
+        -rw-rw-r-- 1 haha haha 0 12月  4 18:59 1.txt
+        -rw-rw-r-- 1 root haha 0 12月  4 18:59 2.txt
 
+  SGID：新建的文件继承所在目录的属组
+  
+LVM：逻辑卷管理。它是一种动态管理存储空间的方法。
+    首先，可以将磁盘或分区转化成物理卷PV，然后将一到多个PV组合成一个卷组VG，再从VG上划分逻辑卷。
+    逻辑卷就可以像普通分区一样，进行格式化挂载使用。如果LV的空间空间不足，可以实现在线动态扩容。
+    
+SELINUX安全增强的Linux
+  模式：
+    Disabled：禁用
+    Permissive：宽松，有违规只记录，仍允许访问
+    Enforcing：强制，违规则拒绝访问
+ 修改：
+    临时：setenforce 0|1
+    永久：/etc/selinux/confing
+  文件的上下文环境值
+    sealert -b  //根据提示修改，或按恢复标签值按钮
+ 
+bonding：多网卡绑定、链路聚合。在RHEL7中新增的功能team可以取代它 
+
+防火墙
+  区域
+    trusted：进入该区域的数据包，默认全部放行
+    block：进入该区域的数据包，默认全部拒绝
+    drop：进入该区域的数据包，默认全部丢弃
+    其他区域，默认除明确允许以外的，全部拒绝
+  生效区域：firewall-cmd --get-a
+数据包根据以下顺序，决定进入哪个区域
+    （1）检查数据包的源IP地址
+    （2）检查数据包是通过哪块网卡收到的
+    （3）
 
 
 
